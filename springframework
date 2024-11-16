@@ -1,0 +1,75 @@
+public class VideoGame {
+    public void start() {
+        System.out.println("Inicialização");
+    }
+
+    public void execute() {
+        System.out.println("Execução do processador");
+    }
+
+    public void load() {
+        System.out.println("Carregando tela inicial");
+    }
+
+    public void free() {
+        System.out.println("Libera dados");
+    }
+}
+
+public class Console {
+    public void load(int position, String info) {
+        System.out.println("Informações no Console");
+    }
+
+    public void free(int position, String info) {
+        System.out.println("Libera dados do Console");
+    }
+}
+
+public class Drive {
+    public String read(int startPosition, int size) {
+        System.out.println("Dados do HD");
+        return "Dados do Boot";
+    }
+
+    public void write(int position, String info) {
+        System.out.println("Escreve informações no HD");
+    }
+}
+
+public class VideoGameFacade {
+    private VideoGame videoGame;
+    private Console console;
+    private Drive drive;
+
+    // Variáveis adicionais para simular o processo de boot
+    private static final int BOOT_SECTOR = 0;
+    private static final int SECTOR_SIZE = 512;
+    private static final int BOOT_ADDRESS = 1000;
+
+    public VideoGameFacade(VideoGame videoGame, Console console, Drive drive) {
+        this.videoGame = videoGame;
+        this.console = console;
+        this.drive = drive;
+    }
+
+    public void ligarVideoGame() {
+        videoGame.start();
+        String hdBootInfo = drive.read(BOOT_SECTOR, SECTOR_SIZE);
+        console.load(BOOT_ADDRESS, hdBootInfo);
+        videoGame.execute();
+        videoGame.free();
+        console.free(BOOT_ADDRESS, hdBootInfo);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        VideoGame videoGame = new VideoGame();
+        Console console = new Console();
+        Drive drive = new Drive();
+
+        VideoGameFacade facade = new VideoGameFacade(videoGame, console, drive);
+        facade.ligarVideoGame();
+    }
+}
